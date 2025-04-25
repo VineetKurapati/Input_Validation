@@ -136,7 +136,7 @@ def test_add_entry(test_db):
         print(f"Testing name: {name}, phone: {phone}")  # Debug print
         response = client.post(
             "/PhoneBook/add",
-            json={"name": name, "phone_number": phone},
+            json={"name": name, "phoneNumber": phone},
             headers={"Authorization": f"Bearer {token}"}
         )
         print(f"Response status: {response.status_code}")  # Debug print
@@ -148,7 +148,7 @@ def test_add_entry(test_db):
     for name in INVALID_NAMES:
         response = client.post(
             "/PhoneBook/add",
-            json={"name": name, "phone_number": VALID_PHONES[0]},
+            json={"name": name, "phoneNumber": VALID_PHONES[0]},
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 422
@@ -158,7 +158,7 @@ def test_add_entry(test_db):
         unique_name = f"Test User {i}"  # Generate unique name for each test
         response = client.post(
             "/PhoneBook/add",
-            json={"name": unique_name, "phone_number": phone},
+            json={"name": unique_name, "phoneNumber": phone},
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 422
@@ -166,7 +166,7 @@ def test_add_entry(test_db):
     # Test duplicate entry
     response = client.post(
         "/PhoneBook/add",
-        json={"name": VALID_NAMES[0], "phone_number": VALID_PHONES[0]},
+        json={"name": VALID_NAMES[0], "phoneNumber": VALID_PHONES[0]},
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 409
@@ -177,7 +177,7 @@ def test_delete_by_name(test_db):
     # Add an entry first
     client.post(
         "/PhoneBook/add",
-        json={"name": VALID_NAMES[0], "phone_number": VALID_PHONES[0]},
+        json={"name": VALID_NAMES[0], "phoneNumber": VALID_PHONES[0]},
         headers={"Authorization": f"Bearer {token}"}
     )
     
@@ -201,20 +201,20 @@ def test_delete_by_number(test_db):
     # Add an entry first
     client.post(
         "/PhoneBook/add",
-        json={"name": VALID_NAMES[0], "phone_number": VALID_PHONES[0]},
+        json={"name": VALID_NAMES[0], "phoneNumber": VALID_PHONES[0]},
         headers={"Authorization": f"Bearer {token}"}
     )
     
     # Test successful deletion
     response = client.put(
-        f"/PhoneBook/deleteByNumber?phone_number={VALID_PHONES[0]}",
+        f"/PhoneBook/deleteByNumber?number={VALID_PHONES[0]}",
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
     
     # Test non-existent entry
     response = client.put(
-        f"/PhoneBook/deleteByNumber?phone_number={VALID_PHONES[0]}",
+        f"/PhoneBook/deleteByNumber?number={VALID_PHONES[0]}",
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 404
@@ -224,7 +224,7 @@ def test_authorization(test_db):
     token = get_token("reader", "readerpass")
     response = client.post(
         "/PhoneBook/add",
-        json={"name": VALID_NAMES[0], "phone_number": VALID_PHONES[0]},
+        json={"name": VALID_NAMES[0], "phoneNumber": VALID_PHONES[0]},
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 403
@@ -245,7 +245,7 @@ def test_audit_logging(test_db):
     # Perform some operations
     client.post(
         "/PhoneBook/add",
-        json={"name": VALID_NAMES[0], "phone_number": VALID_PHONES[0]},
+        json={"name": VALID_NAMES[0], "phoneNumber": VALID_PHONES[0]},
         headers={"Authorization": f"Bearer {token}"}
     )
     
@@ -275,7 +275,7 @@ def test_sql_injection(test_db):
     for injection in SQL_INJECTION_ATTEMPTS:
         response = client.post(
             "/PhoneBook/add",
-            json={"name": injection, "phone_number": VALID_PHONES[0]},
+            json={"name": injection, "phoneNumber": VALID_PHONES[0]},
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 422, f"SQL injection attempt should fail: {injection}"
@@ -294,7 +294,7 @@ def test_xss_attempts(test_db):
     for xss in XSS_ATTEMPTS:
         response = client.post(
             "/PhoneBook/add",
-            json={"name": xss, "phone_number": VALID_PHONES[0]},
+            json={"name": xss, "phoneNumber": VALID_PHONES[0]},
             headers={"Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 422, f"XSS attempt should fail: {xss}"
@@ -325,9 +325,9 @@ def test_authorization_boundaries():
     
     # Try to access write operations with reader token
     write_operations = [
-        ("POST", "/PhoneBook/add", {"name": VALID_NAMES[0], "phone_number": VALID_PHONES[0]}),
+        ("POST", "/PhoneBook/add", {"name": VALID_NAMES[0], "phoneNumber": VALID_PHONES[0]}),
         ("PUT", f"/PhoneBook/deleteByName?name={VALID_NAMES[0]}", None),
-        ("PUT", f"/PhoneBook/deleteByNumber?phone_number={VALID_PHONES[0]}", None)
+        ("PUT", f"/PhoneBook/deleteByNumber?number={VALID_PHONES[0]}", None)
     ]
     
     for method, endpoint, data in write_operations:

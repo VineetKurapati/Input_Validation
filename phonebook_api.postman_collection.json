@@ -117,7 +117,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Bruce Schneier\",\n    \"phone_number\": \"(703)111-2121\"\n}"
+							"raw": "{\n    \"name\": \"Bruce Schneier\",\n    \"phoneNumber\": \"(703)111-2121\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/PhoneBook/add",
@@ -164,12 +164,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/PhoneBook/deleteByNumber?phone_number=(703)111-2121",
+							"raw": "{{base_url}}/PhoneBook/deleteByNumber?number=(703)111-2121",
 							"host": ["{{base_url}}"],
 							"path": ["PhoneBook", "deleteByNumber"],
 							"query": [
 								{
-									"key": "phone_number",
+									"key": "number",
 									"value": "(703)111-2121"
 								}
 							]
