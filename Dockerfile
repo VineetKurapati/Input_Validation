@@ -20,12 +20,14 @@ ENV PYTHONUNBUFFERED=1
 ENV DATABASE_FILE=/app/data/phonebook.db
 ENV SECRET_KEY=your-secret-key-here
 ENV LOG_LEVEL=INFO
+ENV AUDIT_LOG_FILE=/app/logs/audit.log
 
 # Create necessary directories and set permissions
-RUN mkdir -p /app/data && \
+RUN mkdir -p /app/data /app/logs /app/data/backups && \
     touch /app/data/phonebook.db && \
-    touch /app/audit.log && \
-    chmod 666 /app/data/phonebook.db /app/audit.log
+    chmod 666 /app/data/phonebook.db && \
+    chmod 777 /app/logs && \
+    chmod 777 /app/data/backups
 
 # Expose port
 EXPOSE 8000

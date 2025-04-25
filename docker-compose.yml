@@ -7,11 +7,12 @@ services:
       - "8000:8000"
     volumes:
       - ./data:/app/data
-      - ./audit.log:/app/audit.log
+      - ./logs:/app/logs:rw
     environment:
       - DATABASE_FILE=/app/data/phonebook.db
       - SECRET_KEY=your-secret-key-here
       - LOG_LEVEL=INFO
+      - AUDIT_LOG_FILE=/app/logs/audit.log
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8000/docs"]

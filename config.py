@@ -15,4 +15,4 @@ ROLE_READWRITE = "readwrite"
 # Logging configuration
 LOG_LEVEL = "INFO"
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
-AUDIT_LOG_FILE = "audit.log" 
+AUDIT_LOG_FILE = os.getenv('AUDIT_LOG_FILE', 'logs/audit.log') 
