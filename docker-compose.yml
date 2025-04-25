@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./audit.log:/app/audit.log
+    environment:
+      - DATABASE_FILE=/app/data/phonebook.db
+      - SECRET_KEY=your-secret-key-here
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 5s 

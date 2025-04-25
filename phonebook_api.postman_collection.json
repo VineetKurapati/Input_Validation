@@ -1,0 +1,220 @@
+{
+	"info": {
+		"_postman_id": "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+		"name": "PhoneBook API",
+		"description": "Collection for testing the PhoneBook API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Get Token - Reader",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "reader",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "readerpass",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/token",
+							"host": ["{{base_url}}"],
+							"path": ["token"]
+						},
+						"description": "Get authentication token for reader user"
+					}
+				},
+				{
+					"name": "Get Token - Writer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "writer",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "writerpass",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/token",
+							"host": ["{{base_url}}"],
+							"path": ["token"]
+						},
+						"description": "Get authentication token for writer user"
+					}
+				}
+			]
+		},
+		{
+			"name": "PhoneBook Operations",
+			"item": [
+				{
+					"name": "List Entries",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{reader_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/PhoneBook/list",
+							"host": ["{{base_url}}"],
+							"path": ["PhoneBook", "list"]
+						},
+						"description": "List all phonebook entries"
+					}
+				},
+				{
+					"name": "Add Entry",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{writer_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Bruce Schneier\",\n    \"phone_number\": \"(703)111-2121\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/PhoneBook/add",
+							"host": ["{{base_url}}"],
+							"path": ["PhoneBook", "add"]
+						},
+						"description": "Add a new phonebook entry"
+					}
+				},
+				{
+					"name": "Delete by Name",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{writer_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/PhoneBook/deleteByName?name=Bruce%20Schneier",
+							"host": ["{{base_url}}"],
+							"path": ["PhoneBook", "deleteByName"],
+							"query": [
+								{
+									"key": "name",
+									"value": "Bruce Schneier"
+								}
+							]
+						},
+						"description": "Delete a phonebook entry by name"
+					}
+				},
+				{
+					"name": "Delete by Phone Number",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{writer_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/PhoneBook/deleteByNumber?phone_number=(703)111-2121",
+							"host": ["{{base_url}}"],
+							"path": ["PhoneBook", "deleteByNumber"],
+							"query": [
+								{
+									"key": "phone_number",
+									"value": "(703)111-2121"
+								}
+							]
+						},
+						"description": "Delete a phonebook entry by phone number"
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "reader_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "writer_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+} 
