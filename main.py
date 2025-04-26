@@ -471,7 +471,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     error_details = [{"msg": str(error.get("msg", "")), "loc": error.get("loc", [])} for error in exc.errors()]
     logger.warning(f"Validation Error: {error_details} for request: {request.url}")
     return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        status_code=status.HTTP_400_BAD_REQUEST,
         content={"detail": "Invalid input provided.", "errors": error_details},
     )
 
@@ -480,7 +480,7 @@ async def value_error_handler(request: Request, exc: ValueError):
     """Handle ValueError with detailed logging."""
     logger.warning(f"Value Error: {str(exc)} for request: {request.url}")
     return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        status_code=status.HTTP_400_BAD_REQUEST,
         content={"detail": str(exc)},
     )
 

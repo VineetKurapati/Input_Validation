@@ -151,7 +151,7 @@ def test_add_entry(test_db):
             json={"name": name, "phoneNumber": VALID_PHONES[0]},
             headers={"Authorization": f"Bearer {token}"}
         )
-        assert response.status_code == 422
+        assert response.status_code == 400
     
     # Test invalid phones - use unique names for each test
     for i, phone in enumerate(INVALID_PHONES):
@@ -161,7 +161,7 @@ def test_add_entry(test_db):
             json={"name": unique_name, "phoneNumber": phone},
             headers={"Authorization": f"Bearer {token}"}
         )
-        assert response.status_code == 422
+        assert response.status_code == 400
     
     # Test duplicate entry
     response = client.post(
@@ -278,7 +278,7 @@ def test_sql_injection(test_db):
             json={"name": injection, "phoneNumber": VALID_PHONES[0]},
             headers={"Authorization": f"Bearer {token}"}
         )
-        assert response.status_code == 422, f"SQL injection attempt should fail: {injection}"
+        assert response.status_code == 400, f"SQL injection attempt should fail: {injection}"
         
         # Verify the database is still intact
         response = client.get(
@@ -297,7 +297,7 @@ def test_xss_attempts(test_db):
             json={"name": xss, "phoneNumber": VALID_PHONES[0]},
             headers={"Authorization": f"Bearer {token}"}
         )
-        assert response.status_code == 422, f"XSS attempt should fail: {xss}"
+        assert response.status_code == 400, f"XSS attempt should fail: {xss}"
 
 def test_token_expiration():
     # Get initial token
