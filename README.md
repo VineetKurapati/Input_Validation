@@ -18,86 +18,157 @@ A secure and scalable phonebook API built with FastAPI, featuring authentication
 
 ## Requirements
 
-- Python 3.9+
-- Docker and Docker Compose (optional)
-- SQLite3
+- Python 3.9+ (for local development)
+- Docker and Docker Compose (for containerized deployment)
+- SQLite3 (included in containers)
 
-## Installation
+## Installation & Running
 
-### Local Installation
+### Option 1: Docker Installation (Recommended)
+
+1. **Prerequisites**:
+   - Install [Docker](https://docs.docker.com/get-docker/)
+   - Install [Docker Compose](https://docs.docker.com/compose/install/)
+
+2. **Clone the repository**:
+   ```bash
+   git clone https://github.com/VineetKurapati/Input_Validation.git
+   cd Input_Validation
+   ```
+
+3. **Build and run with Docker Compose**:
+   ```bash
+   docker-compose up --build
+   ```
+   This will:
+   - Build the Docker image
+   - Create necessary volumes for data persistence
+   - Start the API server on port 8000
+
+4. **Run in detached mode** (optional):
+   ```bash
+   docker-compose up --build -d
+   ```
+
+5. **Stop the containers**:
+   ```bash
+   docker-compose down
+   ```
+
+6. **View logs**:
+   ```bash
+   docker-compose logs
+   ```
+
+7. **Access the API**:
+   - API endpoint: http://localhost:8000
+   - Swagger UI: http://localhost:8000/docs
+   - ReDoc: http://localhost:8000/redoc
+
+### Option 2: Local Installation
 
 1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/PhoneBook_API.git
-cd PhoneBook_API
-```
+   ```bash
+   git clone https://github.com/VineetKurapati/Input_Validation.git
+   cd Input_Validation
+   ```
 
 2. Create a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
 3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 4. Initialize the database:
-```bash
-python init_db.py
-```
+   ```bash
+   python init_db.py
+   ```
 
 5. Run the application:
-```bash
-uvicorn main:app --reload
-```
+   ```bash
+   uvicorn main:app --reload
+   ```
 
-### Docker Installation
+## Docker Commands Reference
 
-1. Clone the repository:
+### Basic Commands
 ```bash
-git clone https://github.com/yourusername/PhoneBook_API.git
-cd PhoneBook_API
-```
-
-2. Build and run with Docker Compose:
-```bash
+# Build and start containers
 docker-compose up --build
+
+# Start containers in detached mode
+docker-compose up -d
+
+# Stop containers
+docker-compose down
+
+# View logs
+docker-compose logs
+
+# View logs in real-time
+docker-compose logs -f
+
+# Check container status
+docker-compose ps
+```
+
+### Data Management
+- Data is persisted in Docker volumes:
+  - Database: `./data:/app/data`
+  - Logs: `./logs:/app/logs`
+
+### Environment Variables
+The Docker container can be configured using environment variables in `docker-compose.yml`:
+```yaml
+environment:
+  - DATABASE_FILE=/app/data/phonebook.db
+  - SECRET_KEY=your-secret-key-here
+  - LOG_LEVEL=INFO
+  - AUDIT_LOG_FILE=/app/logs/audit.log
+```
+
+### Docker Health Checks
+The container includes health checks that monitor:
+- API availability
+- Database connectivity
+- Log write permissions
+
+## Testing
+
+### Running Tests in Docker
+1. Build and run the test container:
+   ```bash
+   docker-compose -f docker-compose.test.yml up --build
+   ```
+
+### Running Tests Locally
+```bash
+# Set up test environment
+python test_setup.py
+
+# Run tests with verbose output
+python -m pytest test_phonebook.py -v
 ```
 
 ## API Documentation
 
-Once the application is running, you can access the API documentation at:
+Once the application is running, access the API documentation at:
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
 
-## Testing
-
-### Unit Tests
-```bash
-python -m pytest test_phonebook.py -v
-```
-
-### API Tests
-```bash
-./test_api.ps1
-```
-
-### Docker Tests
-```bash
-./test_docker.ps1
-```
-
-## Configuration
-
-The application can be configured using environment variables:
-
-- `DATABASE_FILE`: Path to the SQLite database file
-- `SECRET_KEY`: Secret key for JWT token generation
-- `LOG_LEVEL`: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-- `RATE_LIMIT`: Number of requests per minute
-- `BACKUP_INTERVAL`: Database backup interval in minutes
+## Default Users
+The system comes with two pre-configured users:
+- Read-only user:
+  - Username: `reader`
+  - Password: `readerpass`
+- Read-write user:
+  - Username: `writer`
+  - Password: `writerpass`
 
 ## Security Features
 

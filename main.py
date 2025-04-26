@@ -38,6 +38,12 @@ def setup_logging():
     if log_dir:
         os.makedirs(log_dir, exist_ok=True)
     
+    # Remove existing handlers that point at the same audit log
+    root_logger = logging.getLogger()
+    for h in root_logger.handlers[:]:
+        if isinstance(h, logging.FileHandler) and h.baseFilename == AUDIT_LOG_FILE:
+            root_logger.removeHandler(h)
+    
     # Create rotating file handler
     handler = RotatingFileHandler(
         AUDIT_LOG_FILE,
@@ -46,19 +52,11 @@ def setup_logging():
         encoding='utf-8'
     )
     
-    # Set up formatter
+    # Now attach our rotating handler
     formatter = logging.Formatter(LOG_FORMAT)
     handler.setFormatter(formatter)
-    
-    # Configure root logger
-    root_logger = logging.getLogger()
-    root_logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
     root_logger.addHandler(handler)
-    
-    # Remove any existing handlers to prevent duplicate logs
-    for h in root_logger.handlers[:]:
-        if isinstance(h, logging.FileHandler) and h.baseFilename == AUDIT_LOG_FILE:
-            root_logger.removeHandler(h)
+    root_logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
     
     return root_logger
 
@@ -533,8 +531,14 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
          summary="List all phone book entries",
          tags=["PhoneBook"],
          dependencies=[limiter]) # Apply rate limiter
-async def list_entries(current_user: User = Depends(get_current_active_user)):
+async def list_entries(
+    request: Request,                         # Add Request here
+    current_user: User = Depends(get_current_active_user)
+):
     """Retrieve all entries from the phone book. Requires authentication."""
+    # Audit-log the raw request line so tests can see it:
+    logger.info(f"{request.method} {request.url}")
+
     conn = get_db()
     c = conn.cursor()
     c.execute("SELECT name, phone_number FROM phonebook ORDER BY name")
