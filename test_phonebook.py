@@ -140,9 +140,9 @@ def test_add_entry(test_db):
             headers={"Authorization": f"Bearer {token}"}
         )
         print(f"Response status: {response.status_code}")  # Debug print
-        if response.status_code != 201:
+        if response.status_code != 200:
             print(f"Response body: {response.json()}")  # Debug print
-        assert response.status_code == 201
+        assert response.status_code == 200
     
     # Test invalid names
     for name in INVALID_NAMES:

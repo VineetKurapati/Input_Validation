@@ -545,7 +545,7 @@ async def list_entries(current_user: User = Depends(get_current_active_user)):
 
 @app.post("/PhoneBook/add",
           response_model=dict, # Return simple message
-          status_code=status.HTTP_201_CREATED, # Use 201 for successful creation
+          status_code=status.HTTP_200_OK, # Changed from 201 to 200 to match spec
           summary="Add a new entry",
           tags=["PhoneBook"],
           dependencies=[limiter, Depends(require_write_permission)]) # Apply limiter & auth
