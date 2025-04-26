@@ -1,0 +1,143 @@
+PhoneBook API Testing Instructions Using Curl
+==========================================
+
+Base URL: http://localhost:8000
+
+1. Get Authentication Tokens
+--------------------------
+# Get writer token
+curl -X POST "http://localhost:8000/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=writer&password=writerpass"
+
+# Get reader token
+curl -X POST "http://localhost:8000/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=reader&password=readerpass"
+
+# Save the access_token from the response for use in subsequent requests
+# Example response: {"access_token": "your-token-here", "token_type": "bearer"}
+
+2. List Entries (Requires any token)
+--------------------------------
+curl -X GET "http://localhost:8000/PhoneBook/list" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+
+3. Add Entry (Requires writer token)
+--------------------------------
+# Add valid entry
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Bruce Schneier", "phoneNumber": "(703)111-2121"}'
+
+# Test invalid name (should return 400)
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "L33t Hacker", "phoneNumber": "(703)111-2121"}'
+
+# Test invalid phone (should return 400)
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Valid Name", "phoneNumber": "invalid-phone"}'
+
+4. Delete Entry by Name (Requires writer token)
+------------------------------------------
+curl -X PUT "http://localhost:8000/PhoneBook/deleteByName?name=Bruce%20Schneier" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN"
+
+5. Delete Entry by Number (Requires writer token)
+-------------------------------------------
+curl -X PUT "http://localhost:8000/PhoneBook/deleteByNumber?number=(703)111-2121" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN"
+
+Example Test Scenarios:
+=====================
+
+1. Test Authentication
+---------------------
+# Test valid credentials
+curl -X POST "http://localhost:8000/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=writer&password=writerpass"
+
+# Test invalid credentials (should fail)
+curl -X POST "http://localhost:8000/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=writer&password=wrongpass"
+
+2. Test Authorization
+-------------------
+# Try to add entry with reader token (should fail with 403)
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_READER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Should Fail", "phoneNumber": "123-4567"}'
+
+3. Test Input Validation
+----------------------
+# Valid name formats:
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Bruce Schneier", "phoneNumber": "(703)111-2121"}'
+
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Schneier, Bruce", "phoneNumber": "(703)111-2121"}'
+
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "O'\''Malley, John F.", "phoneNumber": "(703)111-2121"}'
+
+# Valid phone formats:
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Test User 1", "phoneNumber": "12345"}'
+
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Test User 2", "phoneNumber": "+1(703)111-2121"}'
+
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Test User 3", "phoneNumber": "123-1234"}'
+
+4. Test Error Cases
+-----------------
+# Test duplicate entry (should return 409)
+# First add an entry
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Bruce Schneier", "phoneNumber": "(703)111-2121"}'
+
+# Try to add the same entry again
+curl -X POST "http://localhost:8000/PhoneBook/add" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Bruce Schneier", "phoneNumber": "(703)111-2121"}'
+
+# Test deleting non-existent entry (should return 404)
+curl -X PUT "http://localhost:8000/PhoneBook/deleteByName?name=NonExistentUser" \
+  -H "Authorization: Bearer YOUR_WRITER_TOKEN"
+
+Notes:
+-----
+1. Replace YOUR_TOKEN_HERE, YOUR_WRITER_TOKEN, and YOUR_READER_TOKEN with actual tokens
+2. Expected status codes:
+   - 200: Successful operation
+   - 400: Invalid input
+   - 401: Invalid/expired token
+   - 403: Insufficient permissions
+   - 404: Entry not found
+   - 409: Duplicate entry
+3. All responses are in JSON format
+4. Use -v flag with curl for verbose output (e.g., curl -v -X GET ...) 
